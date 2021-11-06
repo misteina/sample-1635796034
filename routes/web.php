@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TodoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
 Route::get('/', function () {
     return view('welcome');
 });
+*/
+
+Route::middleware(['no_auth'])->group(function () {
+
+    Route::post('/login', LoginController::class);
+
+    Route::post('/register', RegisterController::class);
+
+});
+
+Route::resource('todos', TodoController::class)->middleware('auth');
