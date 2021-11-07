@@ -7,23 +7,20 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Todo;
+use Illuminate\Support\Facades\DB;
 
 final class RegistrationAndLoginTest extends TestCase
 {
 
     public function test_refreshTables()
     {
-        User::truncate();
-        Todo::truncate();
-
-        Auth::logout();
+        DB::unprepared('SET FOREIGN_KEY_CHECKS = 0;TRUNCATE TABLE users;TRUNCATE TABLE todos;SET FOREIGN_KEY_CHECKS = 1;');
 
         $this->assertTrue(true);
     }
 
 
-
+    
     public function test_user_registration()
     {
         $response = $this->post('/register', ['username' => 'Enyinna', 'password' => 'password', 'password_confirmation' => 'password']);
@@ -66,6 +63,19 @@ final class RegistrationAndLoginTest extends TestCase
         $response->assertStatus(200);
     }
 
+
+
+    public function test_list_todos()
+    {
+        $user = User::find(1);
+
+        Auth::login($user);
+
+        $response = $this->get('/todos');
+
+        $response->assertJsonFragment(['user_id' => 1]);
+
+    }
     
 
     public function test_delete_todo()
