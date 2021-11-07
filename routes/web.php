@@ -15,7 +15,6 @@ use App\Http\Controllers\TodoController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -24,10 +23,14 @@ Route::get('/', function () {
 
 Route::middleware(['no_auth'])->group(function () {
 
-    Route::post('/login', LoginController::class);
+    Route::get('/', [LoginController::class, 'showPage']);
 
-    Route::post('/register', RegisterController::class);
+    Route::get('/register', [RegisterController::class, 'showPage']);
+
+    Route::post('/login', [LoginController::class, 'login']);
+
+    Route::post('/register', [RegisterController::class, 'register']);
 
 });
 
-Route::resource('todos', TodoController::class)->middleware('auth');
+Route::resource('todos', TodoController::class)->except(['edit', 'create', 'show'])->middleware('auth');
