@@ -10,9 +10,18 @@
         "production": "mix --production"
     },
     "devDependencies": {
+        "@babel/preset-react": "^7.16.0",
+        "@pmmmwh/react-refresh-webpack-plugin": "^0.5.1",
         "axios": "^0.21",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
+        "postcss": "^8.1.14",
+        "react-refresh": "^0.10.0"
+    },
+    "dependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-preset-react-app": "^3.1.2",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2"
     }
 }
