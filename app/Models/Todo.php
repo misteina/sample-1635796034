@@ -13,4 +13,6 @@ class Todo extends Model
         'note',
         'deadline',
     ];
+
+    protected $primaryKey = 'user_id';
 }
