@@ -11,7 +11,19 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+mix.options({
+    hmrOptions: {
+        host: 'localhost',
+        port: '8079'
+    },
+});
+
+mix.webpackConfig({
+    devServer: {
+        port: '8079'
+    },
+});
+
+mix.js('resources/js/login.jsx', 'public/js').react();
+mix.js('resources/js/register.jsx', 'public/js').react();
+mix.js('resources/js/todos.jsx', 'public/js').react();
