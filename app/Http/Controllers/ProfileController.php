@@ -16,7 +16,7 @@ class ProfileController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $name = User::find(Auth::id())->name;
+        $name = User::find(Auth::id())->username;
 
         return view('profile', ['name' => $name]);
     }
