@@ -26,4 +26,4 @@ mix.webpackConfig({
 
 mix.js('resources/js/login.jsx', 'public/js').react();
 mix.js('resources/js/register.jsx', 'public/js').react();
-mix.js('resources/js/todos.jsx', 'public/js').react();
+mix.js('resources/js/profile.jsx', 'public/js').react();
