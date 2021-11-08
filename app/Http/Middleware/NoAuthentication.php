@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NoAuthentication
 {
@@ -16,11 +17,8 @@ class NoAuthentication
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->expectsJson()) {
-            return response()->json([
-                'statusCode' => 403,
-                'message' => 'You are not authorized to access the resource',
-            ], 403);
+        if (Auth::check()) {
+            return redirect('/todos');
         }
 
         return $next($request);

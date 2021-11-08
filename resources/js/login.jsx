@@ -27,7 +27,7 @@ function Login(){
         ).then(
             data => {
                 if (data.message === 'success'){
-                    location.href = '/todos'
+                    location.href = '/profile'
                 } else {
                     setShowError(true);
                 }

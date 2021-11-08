@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\ProfileController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +35,10 @@ Route::middleware(['no_auth'])->group(function () {
 
 });
 
-Route::resource('todos', TodoController::class)->except(['edit', 'create', 'show'])->middleware('auth');
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/profile', ProfileController::class);
+
+    Route::resource('todos', TodoController::class)->except(['edit', 'create', 'show']);
+
+});

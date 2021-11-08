@@ -20,7 +20,7 @@ class LoginController extends Controller
             'password' => 'required|min:3|max:30'
         ]);
 
-        if (Auth::attempt($credentials))
+        if (Auth::attempt($credentials, true))
         {
             $request->session()->regenerate();
 

@@ -29,7 +29,7 @@ function Register(){
         ).then(
             data => {
                 if (data.message === 'success'){
-                    location.href = '/login'
+                    location.href = '/'
                 } else {
                     setShowError(true);
                 }
