@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import Error from './error';
 
 
 function Login(){
@@ -14,7 +15,7 @@ function Login(){
     const submitForm = (e) => {
         e.preventDefault();
 
-        let csrfToken = document.querySelector('meta[name="csrf-token"]')['content'];
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')['content'];
 
         fetch('/login', {
             method: 'post',
@@ -48,13 +49,6 @@ function Login(){
             </form>
         </div>
     );
-}
-
-function Error({display}){
-    if (display){
-        return <div id="error">Incorrect email or password</div>
-    }
-    return null;
 }
 
 ReactDOM.render(<Login />, document.getElementById('content'));

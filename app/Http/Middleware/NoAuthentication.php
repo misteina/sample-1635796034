@@ -18,7 +18,7 @@ class NoAuthentication
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
-            return redirect('/todos');
+            return redirect('/profile');
         }
 
         return $next($request);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import Error from './error';
 
 
 function Register(){
@@ -51,13 +52,6 @@ function Register(){
             </form>
         </div>
     );
-}
-
-function Error({display}){
-    if (display){
-        return <div id="error">Registration failed</div>
-    }
-    return null;
 }
 
 ReactDOM.render(<Register />, document.getElementById('content'));
