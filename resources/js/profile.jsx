@@ -1,108 +1,141 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Error from './error';
+import store from './store';
+import { useSelector, useDispatch, Provider } from 'react-redux';
+import { updateTodosList, selectTodos } from './todos-slice';
 
 function Todos(){
 
-    const [deadline, setDeadline] = useState('');
-    const [note, setNote] = useState('');
-    const [showTodoForm, setShowTodoForm] = useState(false);
+    const todos = useSelector(selectTodos);
+    const dispatch = useDispatch();
+
+    const [updateTarget, setUpdateTarget] = useState(null);
+    const [showAddTodoForm, setShowAddTodoForm] = useState(false);
+    const [showEditTodoForm, setShowEditTodoForm] = useState(false);
+
+    useEffect(
+        () => {
+            fetch('/todos', {
+                method: 'get'
+            }).then(
+                response => response.json()
+            ).then(
+                data => {
+                    if (data.message === 'success'){
+                        dispatch(updateTodosList(data.todos))
+                    }
+                }
+            ).catch(function (error) {
+                console.log('Request failed', error);
+            });
+        },[]
+    );
 
     const editTodo = (e) => {
         document.querySelector('#content').style.overflow = 'hidden';
 
-        const currentNote = e.target.parentElement.parentElement.children[1].innerText;
-        const currentDeadline = e.target.parentElement.parentElement.querySelectorAll('span')[1].innerText;
+        const parent = e.target.parentElement.parentElement;
 
-        setShowTodoForm(true);
-        setDeadline(currentDeadline);
-        setNote(currentNote);
+        setShowEditTodoForm(true);
+        setUpdateTarget(parent)
     };
 
     const deleteTodo = (e) => {
-        const todoId = e.target.parentElement.parentElement.dataset.id;
+        const todoItem = e.target.parentElement.parentElement;
+        const todoId = todoItem.dataset.id;
         const csrfToken = document.querySelector('meta[name="csrf-token"]')['content'];
+
+        todoItem.remove();
 
         fetch(`/todos/${todoId}`, {
             method: 'delete',
             headers: {
               "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-              "'X-CSRF-TOKEN": csrfToken
+              "X-CSRF-TOKEN": csrfToken
             }
-        }).then(
-            response => response.json()
-        ).then(
-            data => {
-                if (data.message === 'success'){
-                    // 
-                }
-            }
-        ).catch(function (error) {
+        }).catch(function (error) {
             console.log('Request failed', error);
         });
     }
 
     const addNewTodo = () => {
         document.querySelector('#content').style.overflow = 'hidden';
-        setDeadline('');
-        setNote('');
-        setShowTodoForm(true);
+        setShowAddTodoForm(true);
     }
 
-    const dismissForm = () => {
+    const dismissAddTodoForm = () => {
         document.querySelector('#content').style.overflow = 'visible';
-        setShowTodoForm(false)
+        setShowAddTodoForm(false)
     };
 
-    return (
-        <Fragment>
-            <div id="todo-list">
-            <button onClick={addNewTodo}>Add Todo</button>
-                <div className="todo" data-id="1">
+    const dismissEditTodoForm = () => {
+        document.querySelector('#content').style.overflow = 'visible';
+        setShowEditTodoForm(false)
+    };
+
+    const showTodos = (todosArray) => {
+        const todos = [...todosArray];
+        todos.sort((a, b) => b.id - a.id);
+        if (todos.length > 0){
+            return todos.map((todo) => 
+                <div key={todo.id.toString()} className="todo" data-id={todo.id.toString()}>
                     <div>
-                        <b>Created:</b>&nbsp;&nbsp;<span>2021-12-03 03:00:00</span>
+                        <b>Created:</b>&nbsp;&nbsp;<span>{todo.created_at.replace('.000000Z', '').replace('T', ' ')}</span>
                     </div>
                     <div>
-                        This the noteh
+                        {todo.note}
                     </div>
                     <div className="item-foot">
                         <div>
-                            <b>Deadline:</b>&nbsp;&nbsp;<span>2021-12-03 03:00:00</span>
+                            <b>Deadline:</b>&nbsp;&nbsp;<span>{todo.deadline}</span>
                         </div>
                         <div onClick={deleteTodo}>DELETE</div>
                         <div onClick={editTodo}>EDIT</div>
                     </div>
                 </div>
+            )
+        }
+        return <div className="no-todos">No todos added</div>;
+    }
+
+    return (
+        <Fragment>
+            <div id="todo-list">
+                <button onClick={addNewTodo}>Add Todo</button>
+                {showTodos(todos)}
             </div>
-            <AddTodo display={showTodoForm} deadline={deadline} note={note} dismissForm={dismissForm} />
+            <AddTodo dispatch={dispatch} display={showAddTodoForm} dismissForm={dismissAddTodoForm} />
+            <EditTodo display={showEditTodoForm} target={updateTarget} dismissForm={dismissEditTodoForm} />
         </Fragment>
     );
 }
 
-function AddTodo({display, deadline, note, dismissForm}){
+function AddTodo({dispatch, display, dismissForm}){
 
     const [showError, setShowError] = useState(false);
     const [dateTime, setDateTime] = useState('');
     const [addNote, setAddNote] = useState('');
 
-    const defaultDateTime = dateTime.length > 0 ? dateTime : deadline;
-    const defaultNote = addNote.length > 0?  addNote : note;
-
     const submitTodo = (e) => {
         e.preventDefault();
         const csrfToken = document.querySelector('meta[name="csrf-token"]')['content'];
+        const formatDateTime = (dateTime.includes('T'))? dateTime.replace('T', ' ')+':00':dateTime;
         fetch('/todos', {
             method: 'post',
             headers: {
               "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
             },
-            body: `deadline=${deadline}&note=${note}&_token=${csrfToken}`
+            body: `deadline=${formatDateTime}&note=${addNote}&_token=${csrfToken}`
         }).then(
             response => response.json()
         ).then(
             data => {
                 if (data.message === 'success'){
-                    //
+                    dispatch(updateTodosList([data.todo]));
+                    dismissForm();
+                    setDateTime('');
+                    setAddNote('');
                 } else {
                     setShowError(true);
                 }
@@ -118,8 +151,70 @@ function AddTodo({display, deadline, note, dismissForm}){
                 <div onClick={(e) => e.stopPropagation()}>
                     <Error display={showError} />
                     <form onSubmit={submitTodo}>
-                        <input type="datetime-local" placeholder="Deadline" onChange={(e) => setDateTime(e.target.value)} defaultValue={defaultDateTime} /> 
-                        <textarea onChange={(e) => setAddNote(e.target.value)} defaultValue={defaultNote}></textarea>
+                        <input type="datetime-local" placeholder="Deadline" onChange={(e) => setDateTime(e.target.value)} value={dateTime} required /> 
+                        <textarea onChange={(e) => setAddNote(e.target.value)} value={addNote} required></textarea>
+                        <button type="submit">Add Todo</button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+    return null;
+}
+
+function EditTodo({display, target, dismissForm}){
+
+    const [showError, setShowError] = useState(false);
+    const [dateTime, setDateTime] = useState('');
+    const [addNote, setAddNote] = useState('');
+
+    if (target && dateTime.length === 0){
+        const currentNote = target.children[1].innerText;
+        const currentDeadline = target.querySelectorAll('span')[1].innerText;
+
+        setDateTime(currentDeadline);
+        setAddNote(currentNote);
+    }
+
+    const submitUpdate = (e) => {
+
+        e.preventDefault();
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')['content'];
+        const formatDateTime = (dateTime.includes('T'))? dateTime.replace('T', ' ')+':00':dateTime;
+        const todoId = target.dataset.id;
+
+        fetch(`/todos/${todoId}`, {
+            method: 'put',
+            headers: {
+              "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+            },
+            body: `deadline=${formatDateTime}&note=${addNote}&_token=${csrfToken}`
+        }).then(
+            response => response.json()
+        ).then(
+            data => {
+                if (data.message === 'success'){
+                    target.children[1].innerText = addNote;
+                    target.querySelectorAll('span')[1].innerText = formatDateTime;
+                    dismissForm();
+                } else {
+                    setShowError(true);
+                }
+            }
+        ).catch(function (error) {
+            console.log('Request failed', error);
+        });
+    }
+
+    if (display){
+        return (
+            <div id="add-todo" onClick={(e) => dismissForm()}>
+                <div onClick={(e) => e.stopPropagation()}>
+                    <Error display={showError} />
+                    <form onSubmit={submitUpdate}>
+                        <input type="datetime-local" placeholder="Deadline" onChange={(e) => setDateTime(e.target.value)} defaultValue={dateTime} required /> 
+                        <textarea onChange={(e) => setAddNote(e.target.value)} defaultValue={addNote} required></textarea>
                         <button type="submit">Update</button>
                     </form>
                 </div>
@@ -129,4 +224,9 @@ function AddTodo({display, deadline, note, dismissForm}){
     return null;
 }
 
-ReactDOM.render(<Todos />, document.getElementById('content'));
+ReactDOM.render(
+    <Provider store={store}>
+        <Todos />
+    </Provider>,
+    document.getElementById('content')
+)

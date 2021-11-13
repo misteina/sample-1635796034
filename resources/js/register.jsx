@@ -45,9 +45,9 @@ function Register(){
             <span>Register</span>
             <form onSubmit={submitForm}>
                 <Error display={showError} />
-                <input type="text" maxLength="30" minLength="3" placeholder="User name" onChange={fillUserName} value={userName} />
-                <input type="text" maxLength="20" minLength="3" placeholder="Password" onChange={fillPassword} value={password} />
-                <input type="text" maxLength="20" minLength="5" placeholder="Confirm Password" onChange={fillConfirmPassword} value={confirmPassword} />
+                <input type="text" maxLength="30" minLength="3" placeholder="User name" onChange={fillUserName} value={userName} required />
+                <input type="text" maxLength="20" minLength="3" placeholder="Password" onChange={fillPassword} value={password} required />
+                <input type="text" maxLength="20" minLength="5" placeholder="Confirm Password" onChange={fillConfirmPassword} value={confirmPassword} required />
                 <button type="submit">Register</button>
             </form>
         </div>
