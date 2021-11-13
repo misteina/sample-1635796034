@@ -6,27 +6,25 @@ use App\Models\Todo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class TodoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of the resource.
+
     public function index()
     {
-        return User::find(Auth::id())->todos;
+        $todos = Cache::remember('todos', 3600, function () {
+            return User::find(Auth::id())->todos;
+        });
+
+        return ['statusCode' => 200, 'message' => 'success', 'todos' => $todos];
     }
 
 
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created resource in storage.
+
     public function store(Request $request)
     {
         $request->validate([
@@ -35,11 +33,13 @@ class TodoController extends Controller
         ]);
 
         $formData = $request->only(['note', 'deadline']);
+        $formData['user_id'] = Auth::id();
 
         $todo = Todo::create($formData);
 
         if ($todo){
-            return response()->json(['statusCode' => 200, 'message' => 'success'], 200);
+            Cache::forget('todos');
+            return response()->json(['statusCode' => 200, 'message' => 'success', 'todo' => $todo], 200);
         }
 
         return response()->json(['statusCode' => 422, 'message' => 'failed'], 422);
@@ -47,13 +47,8 @@ class TodoController extends Controller
 
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Todo  $todo
-     * @return \Illuminate\Http\Response
-     */
+    // Update the specified resource in storage
+
     public function update(Request $request, Todo $todo)
     {
         $request->validate([
@@ -66,19 +61,19 @@ class TodoController extends Controller
 
         $todo->save();
 
+        Cache::forget('todos');
+
         return response()->json(['statusCode' => 200, 'message' => 'success'], 200);
     }
 
 
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Todo  $todo
-     * @return \Illuminate\Http\Response
-     */
+    // Remove the specified resource from storage.
+
     public function destroy(Todo $todo)
     {
+        Cache::forget('todos');
+        
         $todo->delete();
     }
 }
