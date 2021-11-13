@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LogoutController;
 
 
 /*
@@ -40,5 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', ProfileController::class);
 
     Route::resource('todos', TodoController::class)->except(['edit', 'create', 'show']);
+
+    Route::get('/logout', LogoutController::class);
 
 });
