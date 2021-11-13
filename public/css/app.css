@@ -40,13 +40,24 @@ form button {
 
 #profile {
     width: 600px;
-    margin: 80px auto 20px;
+    margin: 40px auto 20px;
 }
 
-#profile span {
+#profile span:first-child {
     display: inline-block;
     margin-right: 20px;
     font-size: 20px;
+}
+
+#profile span:last-child {
+    float: right;
+
+}
+
+#profile span:last-child a {
+    text-decoration: none;
+    color: black;
+    font-size: 18px;
 }
 
 #profile button {
@@ -54,25 +65,26 @@ form button {
 }
 
 #todo-list {
-    position: relative;
     width: 600px;
     margin: auto;
 }
 
 #todo-list > button {
-    position: absolute;
-    top: -47px;
-    right: 0;
     height: 30px;
 }
 
 .todo {
     border: 1px solid #d5d5d5;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .todo > div {
     padding: 10px;
+}
+
+.todo > div:first-child {
+    background-color: #ededed;
 }
 
 .todo > div:nth-child(2) {
@@ -121,4 +133,10 @@ form textarea {
     height: 200px;
     resize: none;
     margin-bottom: 10px;
+}
+
+.no-todos {
+    color: grey;
+    margin-top: 50px;
+    text-align: center;
 }
