@@ -6,6 +6,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\ResetDatabaseController;
 
 
 /*
@@ -17,11 +18,6 @@ use App\Http\Controllers\LogoutController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
-/*
-Route::get('/', function () {
-    return view('welcome');
-});
 */
 
 Route::middleware(['no_auth'])->group(function () {
@@ -45,3 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', LogoutController::class);
 
 });
+
+// Resets database for testing only when in APP_ENV=local mode
+
+Route::get('/db/reset', ResetDatabaseController::class);
