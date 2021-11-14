@@ -41,7 +41,7 @@ function Login(){
     return (
         <div id="form">
             <span>Login</span>
-            <form onSubmit={submitForm}>
+            <form id="login" onSubmit={submitForm}>
                 <Error display={showError} />
                 <input type="text" maxLength="30" minLength="3" placeholder="User name" onChange={fillUserName} value={userName} required />
                 <input type="text" maxLength="20" minLength="3" placeholder="Password" onChange={fillPassword} value={password} required />

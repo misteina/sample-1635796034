@@ -5,7 +5,7 @@ import store from './store';
 import { useSelector, useDispatch, Provider } from 'react-redux';
 import { updateTodosList, selectTodos } from './todos-slice';
 
-function Todos(){
+function Profile(){
 
     const todos = useSelector(selectTodos);
     const dispatch = useDispatch();
@@ -13,6 +13,7 @@ function Todos(){
     const [updateTarget, setUpdateTarget] = useState(null);
     const [showAddTodoForm, setShowAddTodoForm] = useState(false);
     const [showEditTodoForm, setShowEditTodoForm] = useState(false);
+    const [todosLoaded, setTodosLoaded] = useState(false);
 
     useEffect(
         () => {
@@ -23,7 +24,8 @@ function Todos(){
             ).then(
                 data => {
                     if (data.message === 'success'){
-                        dispatch(updateTodosList(data.todos))
+                        dispatch(updateTodosList(data.todos));
+                        setTodosLoaded(true);
                     }
                 }
             ).catch(function (error) {
@@ -91,12 +93,14 @@ function Todos(){
                             <b>Deadline:</b>&nbsp;&nbsp;<span>{todo.deadline}</span>
                         </div>
                         <div onClick={deleteTodo}>DELETE</div>
-                        <div onClick={editTodo}>EDIT</div>
+                        <div className="edit" onClick={editTodo}>EDIT</div>
                     </div>
                 </div>
             )
+        } else if (todosLoaded && todos.length === 0){
+            return <div className="no-todos">No todos added</div>;
         }
-        return <div className="no-todos">No todos added</div>;
+        return <div className="no-todos">Loading...</div>;
     }
 
     return (
@@ -170,7 +174,7 @@ function EditTodo({display, target, dismissForm}){
 
     if (target && dateTime.length === 0){
         const currentNote = target.children[1].innerText;
-        const currentDeadline = target.querySelectorAll('span')[1].innerText;
+        const currentDeadline = target.querySelectorAll('span')[1].innerText.replace(' ', 'T').substr(0, 16);
 
         setDateTime(currentDeadline);
         setAddNote(currentNote);
@@ -209,7 +213,7 @@ function EditTodo({display, target, dismissForm}){
 
     if (display){
         return (
-            <div id="add-todo" onClick={(e) => dismissForm()}>
+            <div id="edit-todo" onClick={(e) => dismissForm()}>
                 <div onClick={(e) => e.stopPropagation()}>
                     <Error display={showError} />
                     <form onSubmit={submitUpdate}>
@@ -226,7 +230,7 @@ function EditTodo({display, target, dismissForm}){
 
 ReactDOM.render(
     <Provider store={store}>
-        <Todos />
+        <Profile />
     </Provider>,
     document.getElementById('content')
 )
