@@ -7,12 +7,12 @@
 3. Run `npx cypress open` to run frontend tests
 
 ## FRONTED
-React
+React,
 React-Redux https://github.com/misteina/sample-1635796034/tree/master/resources/js
 
 ## BACKEND
-Docker
-PHP/Laravel
-Nginx
-MySQL
+Docker,
+PHP/Laravel,
+Nginx,
+MySQL,
 Memcached
