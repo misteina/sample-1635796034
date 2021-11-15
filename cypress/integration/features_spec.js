@@ -60,6 +60,13 @@ it('Confirms todo is edited', () => {
 
 })
 
+it('Delete todo item', () => {
+
+    cy.get('.delete').click()
+    cy.get('.todo').should('not.exist');
+
+})
+
 it('checks user logout', () => {
 
     cy.get('#profile div a').click()

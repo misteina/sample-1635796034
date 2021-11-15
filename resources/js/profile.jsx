@@ -92,7 +92,7 @@ function Profile(){
                         <div>
                             <b>Deadline:</b>&nbsp;&nbsp;<span>{todo.deadline}</span>
                         </div>
-                        <div onClick={deleteTodo}>DELETE</div>
+                        <div className="delete" onClick={deleteTodo}>DELETE</div>
                         <div className="edit" onClick={editTodo}>EDIT</div>
                     </div>
                 </div>
